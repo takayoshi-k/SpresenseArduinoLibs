@@ -1,4 +1,4 @@
-MBEDTLS_DIR = /home/taka/work/study/google_drive/repos/spresense_apps/hostcode/google_drive
+MBEDTLS_DIR = modules
 MBEDTLS_VERDIR = $(MBEDTLS_DIR)/mbedtls_v2.28
 
 CXX = g++
