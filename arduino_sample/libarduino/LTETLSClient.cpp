@@ -49,7 +49,7 @@
 #else
 #define LTETLSCDBG(format, ...)
 #endif
-#define LTETLSCERR(format, ...) ::printf("DEBUG:LTETLSClient:%d " format, __LINE__, ##__VA_ARGS__)
+#define LTETLSCERR(format, ...) ::printf("ERROR:LTETLSClient:%d " format, __LINE__, ##__VA_ARGS__)
 
 // #define CALLLOG() printf("%s called\n", __func__)
 #define CALLLOG()

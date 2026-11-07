@@ -85,7 +85,6 @@ int HttpClient::startRequest(const char* aURLPath, const char* aHttpMethod,
     {
         if (iServerName)
         {
-          printf("Connecting\n");
             if (!(iClient->connect(iServerName, iServerPort) > 0))
             {
 #ifdef LOGGING
@@ -138,7 +137,17 @@ int HttpClient::startRequest(const char* aURLPath, const char* aHttpMethod,
 
         if (hasBody)
         {
-                write(aBody, aContentLength);
+            int sent, written;
+            sent = 0;
+            while (sent < aContentLength)
+            {
+                written = write(&aBody[sent], aContentLength - sent);
+                if (written < 0)
+                {
+                    return HTTP_ERROR_SOCKET_CLIENT;
+                }
+                sent += written;
+            }
         }
     }
 
@@ -560,7 +569,6 @@ String HttpClient::responseBody()
     int bodyLength = contentLength();
     String response;
 
-    // printf("[DEBUG] bodyLen: %d\n", bodyLength);
     if (bodyLength > 0)
     {
         // try to reserve bodyLength bytes
@@ -609,20 +617,11 @@ bool HttpClient::endOfBodyReached()
 
 int HttpClient::available()
 {
-    // printf("[DEBIG R] State:%d, %d\n", iState, eReadingChunkLength);
     if (iState == eReadingChunkLength)
     {
         while (iClient->available())
         {
             char c = iClient->read();
-#if 0
-            printf("[DEBIG R]=====\n");
-            if (isprint(c) || isspace(c))
-              {
-                printf("%c", c);
-              }
-            printf("End [DEBIG R]=====\n");
-#endif
 
             if (c == '\n')
             {
@@ -673,13 +672,6 @@ int HttpClient::read()
     }
 
     int ret = iClient->read();
-#if 0
-    if (isprint(ret) || isspace(ret))
-      {
-        printf("%c", ret);
-      }
-#endif
-
     if (ret >= 0)
     {
         if (endOfHeadersReached() && iContentLength > 0)
